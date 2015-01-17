@@ -3,11 +3,11 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <LinkIncremental>false</LinkIncremental>
-    <OutputPath>$(SolutionDir)..\bin32\$(Configuration)\</OutputPath>
-    <OutDir>$(SolutionDir)bin32\</OutDir>
+    <OutputPath>$(SolutionDir)..\bin$(PlatformArchitecture)\$(Configuration)\</OutputPath>
+    <OutDir>$(SolutionDir)bin$(PlatformArchitecture)\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)\$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib32;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)lib$(PlatformArchitecture);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Bscmake>
@@ -26,13 +26,13 @@
       <AdditionalIncludeDirectories>$(ProjectDir)/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapExports>false</MapExports>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
-      <ImportLibrary>$(SolutionDir)lib32/$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)lib$(PlatformArchitecture)/$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
       <FixedBaseAddress>false</FixedBaseAddress>
