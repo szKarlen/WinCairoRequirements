@@ -2000,6 +2000,9 @@
     <ClCompile Include="..\crypto\o_time.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\crypto\evp\evp_cnf.c">
+      <Filter>Source Files\evp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\crypto\aes\aes.h">

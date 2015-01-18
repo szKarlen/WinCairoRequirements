@@ -356,6 +356,7 @@
     <ClCompile Include="..\crypto\evp\digest.c" />
     <ClCompile Include="..\crypto\evp\encode.c" />
     <ClCompile Include="..\crypto\evp\evp_acnf.c" />
+    <ClCompile Include="..\crypto\evp\evp_cnf.c" />
     <ClCompile Include="..\crypto\evp\evp_enc.c" />
     <ClCompile Include="..\crypto\evp\evp_err.c" />
     <ClCompile Include="..\crypto\evp\evp_fips.c" />
@@ -981,7 +982,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ExcludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x86);</ExcludePath>
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSDK_LibraryPath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

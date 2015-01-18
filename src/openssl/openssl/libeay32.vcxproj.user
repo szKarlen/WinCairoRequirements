@@ -8,4 +8,7 @@
     <DevPartner_IsInstrumented>0</DevPartner_IsInstrumented>
     <DevPartner_Instrumented_Type> /NMbcOn</DevPartner_Instrumented_Type>
   </PropertyGroup>
+  <PropertyGroup>
+    <ShowAllFiles>false</ShowAllFiles>
+  </PropertyGroup>
 </Project>
