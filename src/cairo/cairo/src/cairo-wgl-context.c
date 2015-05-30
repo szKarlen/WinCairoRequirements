@@ -265,16 +265,16 @@ cairo_gl_surface_create_for_dc (cairo_device_t	*device,
 
 void InitWGLStuff ()
 {
-    _glActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)wglGetProcAddress((LPCSTR)"glActiveTextureARB");
-    _glBlendFuncSeparate = (PFNGLBLENDFUNCSEPARATEPROC)wglGetProcAddress((LPCSTR)"glBlendFuncSeparate");
+	_glActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)wglGetProcAddress((LPCSTR)"glActiveTextureARB");
+	_glBlendFuncSeparate = (PFNGLBLENDFUNCSEPARATEPROC)wglGetProcAddress((LPCSTR)"glBlendFuncSeparate");
 }
 
 GLAPI void APIENTRY glActiveTexture (GLenum texture)
 {
-    (*_glActiveTextureARB)(texture);
+	(*_glActiveTextureARB)(texture);
 }
 
 GLAPI void APIENTRY glBlendFuncSeparate (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha)
 {
-    (*_glBlendFuncSeparate)(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
+	(*_glBlendFuncSeparate)(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha);
 }
