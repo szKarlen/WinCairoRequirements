@@ -791,5 +791,11 @@
     <ClInclude Include="cairo-gl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cairo-line-inline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cairo-line-private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

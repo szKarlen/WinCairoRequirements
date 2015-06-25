@@ -388,6 +388,8 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClInclude Include="cairo-image-info-private.h" />
     <ClInclude Include="cairo-image-surface-inline.h" />
     <ClInclude Include="cairo-image-surface-private.h" />
+    <ClInclude Include="cairo-line-inline.h" />
+    <ClInclude Include="cairo-line-private.h" />
     <ClInclude Include="cairo-list-inline.h" />
     <ClInclude Include="cairo-list-private.h" />
     <ClInclude Include="cairo-malloc-private.h" />
