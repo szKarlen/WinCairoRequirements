@@ -493,6 +493,7 @@ typedef struct _cairo_scaled_font_subset {
     cairo_bool_t is_latin;
 } cairo_scaled_font_subset_t;
 
+#if !CAIRO_HAS_DWRITE_FONT
 struct _cairo_scaled_font_backend {
     cairo_font_type_t type;
 
@@ -598,6 +599,68 @@ struct _cairo_scaled_font_backend {
                            unsigned char        *buffer,
                            unsigned long        *length);
 };
+#else
+struct _cairo_scaled_font_backend {
+	cairo_font_type_t type;
+
+	void
+		(*fini)		(void			*scaled_font);
+
+	cairo_warn cairo_int_status_t
+		(*scaled_glyph_init)	(void			     *scaled_font,
+		cairo_scaled_glyph_t	     *scaled_glyph,
+		cairo_scaled_glyph_info_t    info);
+
+	/* A backend only needs to implement this or ucs4_to_index(), not
+	* both. This allows the backend to do something more sophisticated
+	* then just converting characters one by one.
+	*/
+	cairo_warn cairo_int_status_t
+		(*text_to_glyphs) (void                       *scaled_font,
+		double		           x,
+		double		           y,
+		const char	          *utf8,
+		int		           utf8_len,
+		cairo_glyph_t	         **glyphs,
+		int		          *num_glyphs,
+		cairo_text_cluster_t      **clusters,
+		int		          *num_clusters,
+		cairo_text_cluster_flags_t *cluster_flags);
+
+	unsigned long
+		(*ucs4_to_index)		(void			     *scaled_font,
+		uint32_t		      ucs4);
+	cairo_warn cairo_int_status_t
+		(*show_glyphs)	(void			*scaled_font,
+		cairo_operator_t	 op,
+		const cairo_pattern_t	*pattern,
+		cairo_surface_t	*surface,
+		int			 source_x,
+		int			 source_y,
+		int			 dest_x,
+		int			 dest_y,
+		unsigned int		 width,
+		unsigned int		 height,
+		cairo_glyph_t		*glyphs,
+		int			 num_glyphs,
+		cairo_region_t		*clip_region,
+		int			*remaining_glyphs);
+
+	cairo_warn cairo_int_status_t
+		(*load_truetype_table)(void		        *scaled_font,
+		unsigned long         tag,
+		long                  offset,
+		unsigned char        *buffer,
+		unsigned long        *length);
+
+	/* ucs4 is set to -1 if the unicode character could not be found
+	* for the glyph */
+	cairo_warn cairo_int_status_t
+		(*index_to_ucs4)(void                       *scaled_font,
+		unsigned long               index,
+		uint32_t                   *ucs4);
+};
+#endif
 
 struct _cairo_font_face_backend {
     cairo_font_type_t	type;
@@ -641,6 +704,12 @@ extern const cairo_private struct _cairo_font_face_backend _cairo_win32_font_fac
 
 #endif
 
+#if CAIRO_HAS_DWRITE_FONT
+
+extern const cairo_private struct _cairo_font_face_backend _cairo_dwrite_font_face_backend;
+
+#endif
+
 #if CAIRO_HAS_QUARTZ_FONT
 
 extern const cairo_private struct _cairo_font_face_backend _cairo_quartz_font_face_backend;
@@ -673,7 +742,12 @@ struct _cairo_surface_attributes {
 #define CAIRO_FT_FONT_FAMILY_DEFAULT     ""
 #define CAIRO_USER_FONT_FAMILY_DEFAULT     "@cairo:"
 
-#if   CAIRO_HAS_WIN32_FONT
+#if   CAIRO_HAS_DWRITE_FONT
+
+#define CAIRO_FONT_FAMILY_DEFAULT CAIRO_WIN32_FONT_FAMILY_DEFAULT
+#define CAIRO_FONT_FACE_BACKEND_DEFAULT &_cairo_dwrite_font_face_backend
+
+#elif CAIRO_HAS_WIN32_FONT
 
 #define CAIRO_FONT_FAMILY_DEFAULT CAIRO_WIN32_FONT_FAMILY_DEFAULT
 #define CAIRO_FONT_FACE_BACKEND_DEFAULT &_cairo_win32_font_face_backend
@@ -1575,6 +1649,21 @@ _cairo_pen_init (cairo_pen_t	*pen,
 		 double		 tolerance,
 		 const cairo_matrix_t	*ctm);
 
+cairo_status_t
+_cairo_surface_composite(cairo_operator_t	op,
+cairo_surface_t	*abstract_src,
+cairo_surface_t	*abstract_mask,
+cairo_surface_t	*dst,
+int src_x,
+int src_y,
+int mask_x,
+int mask_y,
+int dst_x,
+int dst_y,
+unsigned int width,
+unsigned int height,
+cairo_region_t *clip_region);
+
 cairo_private void
 _cairo_pen_init_empty (cairo_pen_t *pen);
 
@@ -1846,7 +1935,7 @@ cairo_private int
 _cairo_ucs4_to_utf8 (uint32_t    unicode,
 		     char       *utf8);
 
-#if CAIRO_HAS_WIN32_FONT || CAIRO_HAS_QUARTZ_FONT || CAIRO_HAS_PDF_OPERATORS
+#if CAIRO_HAS_WIN32_FONT || CAIRO_HAS_QUARTZ_FONT || CAIRO_HAS_PDF_OPERATORS || CAIRO_HAS_DW_FONT
 # define CAIRO_HAS_UTF8_TO_UTF16 1
 #endif
 #if CAIRO_HAS_UTF8_TO_UTF16

@@ -50,6 +50,7 @@
 #include "cairo-region-private.h"
 #include "cairo-surface-inline.h"
 #include "cairo-tee-surface-private.h"
+#include "cairo-image-surface-private.h"
 
 /**
  * SECTION:cairo-surface
@@ -1930,6 +1931,138 @@ cairo_surface_get_fallback_resolution (cairo_surface_t	*surface,
 	*x_pixels_per_inch = surface->x_fallback_resolution;
     if (y_pixels_per_inch)
 	*y_pixels_per_inch = surface->y_fallback_resolution;
+}
+
+static pixman_op_t
+_pixman_operator(cairo_operator_t op)
+{
+	switch ((int)op) {
+	case CAIRO_OPERATOR_CLEAR:
+		return PIXMAN_OP_CLEAR;
+
+	case CAIRO_OPERATOR_SOURCE:
+		return PIXMAN_OP_SRC;
+	case CAIRO_OPERATOR_OVER:
+		return PIXMAN_OP_OVER;
+	case CAIRO_OPERATOR_IN:
+		return PIXMAN_OP_IN;
+	case CAIRO_OPERATOR_OUT:
+		return PIXMAN_OP_OUT;
+	case CAIRO_OPERATOR_ATOP:
+		return PIXMAN_OP_ATOP;
+
+	case CAIRO_OPERATOR_DEST:
+		return PIXMAN_OP_DST;
+	case CAIRO_OPERATOR_DEST_OVER:
+		return PIXMAN_OP_OVER_REVERSE;
+	case CAIRO_OPERATOR_DEST_IN:
+		return PIXMAN_OP_IN_REVERSE;
+	case CAIRO_OPERATOR_DEST_OUT:
+		return PIXMAN_OP_OUT_REVERSE;
+	case CAIRO_OPERATOR_DEST_ATOP:
+		return PIXMAN_OP_ATOP_REVERSE;
+
+	case CAIRO_OPERATOR_XOR:
+		return PIXMAN_OP_XOR;
+	case CAIRO_OPERATOR_ADD:
+		return PIXMAN_OP_ADD;
+	case CAIRO_OPERATOR_SATURATE:
+		return PIXMAN_OP_SATURATE;
+
+	case CAIRO_OPERATOR_MULTIPLY:
+		return PIXMAN_OP_MULTIPLY;
+	case CAIRO_OPERATOR_SCREEN:
+		return PIXMAN_OP_SCREEN;
+	case CAIRO_OPERATOR_OVERLAY:
+		return PIXMAN_OP_OVERLAY;
+	case CAIRO_OPERATOR_DARKEN:
+		return PIXMAN_OP_DARKEN;
+	case CAIRO_OPERATOR_LIGHTEN:
+		return PIXMAN_OP_LIGHTEN;
+	case CAIRO_OPERATOR_COLOR_DODGE:
+		return PIXMAN_OP_COLOR_DODGE;
+	case CAIRO_OPERATOR_COLOR_BURN:
+		return PIXMAN_OP_COLOR_BURN;
+	case CAIRO_OPERATOR_HARD_LIGHT:
+		return PIXMAN_OP_HARD_LIGHT;
+	case CAIRO_OPERATOR_SOFT_LIGHT:
+		return PIXMAN_OP_SOFT_LIGHT;
+	case CAIRO_OPERATOR_DIFFERENCE:
+		return PIXMAN_OP_DIFFERENCE;
+	case CAIRO_OPERATOR_EXCLUSION:
+		return PIXMAN_OP_EXCLUSION;
+	case CAIRO_OPERATOR_HSL_HUE:
+		return PIXMAN_OP_HSL_HUE;
+	case CAIRO_OPERATOR_HSL_SATURATION:
+		return PIXMAN_OP_HSL_SATURATION;
+	case CAIRO_OPERATOR_HSL_COLOR:
+		return PIXMAN_OP_HSL_COLOR;
+	case CAIRO_OPERATOR_HSL_LUMINOSITY:
+		return PIXMAN_OP_HSL_LUMINOSITY;
+
+	default:
+		ASSERT_NOT_REACHED;
+		return PIXMAN_OP_OVER;
+	}
+}
+
+static cairo_status_t
+_cairo_image_surface_set_clip_region(cairo_image_surface_t *surface,
+cairo_region_t *region)
+{
+	if (!pixman_image_set_clip_region32(surface->pixman_image, &region->rgn))
+		return _cairo_error(CAIRO_STATUS_NO_MEMORY);
+
+	return CAIRO_STATUS_SUCCESS;
+}
+
+static pixman_image_t *
+to_pixman_image(cairo_surface_t *s)
+{
+	return ((cairo_image_surface_t *)s)->pixman_image;
+}
+
+cairo_status_t
+_cairo_surface_composite(cairo_operator_t	op,
+cairo_surface_t	*abstract_src,
+cairo_surface_t	*abstract_mask,
+cairo_surface_t	*dst,
+int			src_x,
+int			src_y,
+int			mask_x,
+int			mask_y,
+int			dst_x,
+int			dst_y,
+unsigned int		width,
+unsigned int		height,
+cairo_region_t	*clip_region)
+{
+	cairo_image_source_t *src = (cairo_image_source_t *)abstract_src;
+	cairo_image_source_t *mask = (cairo_image_source_t *)abstract_mask;
+
+	TRACE((stderr, "%s\n", __FUNCTION__));
+
+	if (clip_region)
+		_cairo_image_surface_set_clip_region((cairo_image_surface_t*)dst, clip_region);
+
+	if (mask) {
+		pixman_image_composite32(_pixman_operator(op),
+			src->pixman_image, mask->pixman_image, to_pixman_image(dst),
+			src_x, src_y,
+			mask_x, mask_y,
+			dst_x, dst_y,
+			width, height);
+	}
+	else {
+		pixman_image_composite32(_pixman_operator(op),
+			src->pixman_image, NULL, to_pixman_image(dst),
+			src_x, src_y,
+			0, 0,
+			dst_x, dst_y,
+			width, height);
+	}
+
+	return CAIRO_STATUS_SUCCESS;
 }
 
 cairo_bool_t

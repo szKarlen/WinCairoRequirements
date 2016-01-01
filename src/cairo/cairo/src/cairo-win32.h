@@ -101,7 +101,46 @@ cairo_public void
 cairo_win32_scaled_font_get_device_to_logical (cairo_scaled_font_t *scaled_font,
 					       cairo_matrix_t *device_to_logical);
 
+BYTE cairo_win32_get_system_text_quality(void);
+
 #endif /* CAIRO_HAS_WIN32_FONT */
+
+#if CAIRO_HAS_DWRITE_FONT
+
+/*
+* Win32 DirectWrite font support
+*/
+cairo_public cairo_font_face_t *
+cairo_dwrite_font_face_create_for_dwrite_fontface(void *dwrite_font, void *dwrite_font_face);
+
+void
+cairo_dwrite_scaled_font_allow_manual_show_glyphs(cairo_scaled_font_t *dwrite_scaled_font, cairo_bool_t allowed);
+
+void
+cairo_dwrite_scaled_font_set_force_GDI_classic(cairo_scaled_font_t *dwrite_scaled_font, cairo_bool_t force);
+
+cairo_bool_t
+cairo_dwrite_scaled_font_get_force_GDI_classic(cairo_scaled_font_t *dwrite_scaled_font);
+
+void
+cairo_dwrite_set_cleartype_params(FLOAT gamma, FLOAT contrast, FLOAT level, int geometry, int mode);
+
+int
+cairo_dwrite_get_cleartype_rendering_mode();
+
+cairo_public cairo_font_face_t*
+cairo_dwrite_font_face_create_for_hfont(HFONT font);
+
+cairo_public cairo_font_face_t*
+cairo_dwrite_font_face_create_for_logfontw(LOGFONTW *logfont);
+
+cairo_public cairo_font_face_t*
+cairo_logfontw_font_face_create_for_dwrite(cairo_scaled_font_t* scaled_font);
+
+cairo_public void* 
+cairo_dwrite_font_face_get(cairo_scaled_font_t* scaled_font);
+
+#endif /* CAIRO_HAS_DWRITE_FONT */
 
 CAIRO_END_DECLS
 

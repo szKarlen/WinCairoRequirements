@@ -1535,136 +1535,161 @@ _cairo_win32_printing_surface_show_glyphs (void                 *abstract_surfac
                                            cairo_scaled_font_t  *scaled_font,
 					   const cairo_clip_t	*clip)
 {
-    cairo_win32_printing_surface_t *surface = abstract_surface;
-    cairo_status_t status = CAIRO_STATUS_SUCCESS;
-    cairo_scaled_glyph_t *scaled_glyph;
-    cairo_pattern_t *opaque = NULL;
-    int i;
-    cairo_matrix_t old_ctm;
-    cairo_bool_t old_has_ctm;
-    cairo_solid_pattern_t clear;
+	cairo_win32_printing_surface_t *surface = abstract_surface;
+	cairo_status_t status = CAIRO_STATUS_SUCCESS;
+	cairo_scaled_glyph_t *scaled_glyph;
+	cairo_pattern_t *opaque = NULL;
+	int i;
+	cairo_matrix_t old_ctm;
+	cairo_bool_t old_has_ctm;
+	cairo_solid_pattern_t clear;
+	cairo_scaled_font_t *local_scaled_font = NULL;
 
-    status = _cairo_surface_clipper_set_clip (&surface->clipper, clip);
-    if (status)
-	return status;
-
-    if (op == CAIRO_OPERATOR_CLEAR) {
-	_cairo_win32_printing_surface_init_clear_color (surface, &clear);
-	source = (cairo_pattern_t*) &clear;
-	op = CAIRO_OPERATOR_SOURCE;
-    }
-
-    if (surface->paginated_mode == CAIRO_PAGINATED_MODE_ANALYZE) {
-	/* When printing bitmap fonts to a printer DC, Windows may
-	 * substitute an outline font for bitmap font. As the win32
-	 * font backend always uses a screen DC when obtaining the
-	 * font metrics the metrics of the substituted font will not
-	 * match the metrics that the win32 font backend returns.
-	 *
-	 * If we are printing a bitmap font, use fallback images to
-	 * ensure the font is not substituted.
-	 */
-#if CAIRO_HAS_WIN32_FONT
-	if (cairo_scaled_font_get_type (scaled_font) == CAIRO_FONT_TYPE_WIN32) {
-	    if (_cairo_win32_scaled_font_is_bitmap (scaled_font))
-		return CAIRO_INT_STATUS_UNSUPPORTED;
-	    else
-		return _cairo_win32_printing_surface_analyze_operation (surface, op, source);
-	}
-#endif
-
-	/* For non win32 fonts we need to check that each glyph has a
-	 * path available. If a path is not available,
-	 * _cairo_scaled_glyph_lookup() will return
-	 * CAIRO_INT_STATUS_UNSUPPORTED and a fallback image will be
-	 * used.
-	 */
-        _cairo_scaled_font_freeze_cache (scaled_font);
-	for (i = 0; i < num_glyphs; i++) {
-	    status = _cairo_scaled_glyph_lookup (scaled_font,
-						 glyphs[i].index,
-						 CAIRO_SCALED_GLYPH_INFO_PATH,
-						 &scaled_glyph);
-	    if (status)
-                break;
-	}
-        _cairo_scaled_font_thaw_cache (scaled_font);
-        if (status)
-            return status;
-
-	return _cairo_win32_printing_surface_analyze_operation (surface, op, source);
-    }
-
-    if (source->type == CAIRO_PATTERN_TYPE_SOLID) {
-	cairo_solid_pattern_t *solid = (cairo_solid_pattern_t *) source;
-	COLORREF color;
-
-	color = _cairo_win32_printing_surface_flatten_transparency (surface,
-								    &solid->color);
-	opaque = cairo_pattern_create_rgb (GetRValue (color) / 255.0,
-					   GetGValue (color) / 255.0,
-					   GetBValue (color) / 255.0);
-	if (opaque->status)
-	    return opaque->status;
-	source = opaque;
-    }
-
-#if CAIRO_HAS_WIN32_FONT
-    if (cairo_scaled_font_get_type (scaled_font) == CAIRO_FONT_TYPE_WIN32 &&
-	source->type == CAIRO_PATTERN_TYPE_SOLID)
-    {
-	return _cairo_win32_printing_surface_emit_win32_glyphs (surface,
-								op,
-								source,
-								glyphs,
-								num_glyphs,
-								scaled_font,
-								clip);
-    }
-#endif
-
-    SaveDC (surface->win32.dc);
-    old_ctm = surface->ctm;
-    old_has_ctm = surface->has_ctm;
-    surface->has_ctm = TRUE;
-    surface->path_empty = TRUE;
-    _cairo_scaled_font_freeze_cache (scaled_font);
-    BeginPath (surface->win32.dc);
-    for (i = 0; i < num_glyphs; i++) {
-	status = _cairo_scaled_glyph_lookup (scaled_font,
-					     glyphs[i].index,
-					     CAIRO_SCALED_GLYPH_INFO_PATH,
-					     &scaled_glyph);
+	status = _cairo_surface_clipper_set_clip (&surface->clipper, clip);
 	if (status)
-	    break;
-	surface->ctm = old_ctm;
-	cairo_matrix_translate (&surface->ctm, glyphs[i].x, glyphs[i].y);
-	status = _cairo_win32_printing_surface_emit_path (surface, scaled_glyph->path);
-    }
-    EndPath (surface->win32.dc);
-    _cairo_scaled_font_thaw_cache (scaled_font);
-    surface->ctm = old_ctm;
-    surface->has_ctm = old_has_ctm;
-    if (status == CAIRO_STATUS_SUCCESS && surface->path_empty == FALSE) {
-	if (source->type == CAIRO_PATTERN_TYPE_SOLID) {
-	    status = _cairo_win32_printing_surface_select_solid_brush (surface, source);
-	    if (status)
 		return status;
 
-	    SetPolyFillMode (surface->win32.dc, WINDING);
-	    FillPath (surface->win32.dc);
-	    _cairo_win32_printing_surface_done_solid_brush (surface);
-	} else {
-	    SelectClipPath (surface->win32.dc, RGN_AND);
-	    status = _cairo_win32_printing_surface_paint_pattern (surface, source);
+	if (op == CAIRO_OPERATOR_CLEAR) {
+		_cairo_win32_printing_surface_init_clear_color (surface, &clear);
+		source = (cairo_pattern_t*) &clear;
+		op = CAIRO_OPERATOR_SOURCE;
 	}
-    }
-    RestoreDC (surface->win32.dc, -1);
 
-    if (opaque)
-	cairo_pattern_destroy (opaque);
+	if (surface->paginated_mode == CAIRO_PAGINATED_MODE_ANALYZE) {
+		/* When printing bitmap fonts to a printer DC, Windows may
+		 * substitute an outline font for bitmap font. As the win32
+		 * font backend always uses a screen DC when obtaining the
+		 * font metrics the metrics of the substituted font will not
+		 * match the metrics that the win32 font backend returns.
+		 *
+		 * If we are printing a bitmap font, use fallback images to
+		 * ensure the font is not substituted.
+		 */
+#if CAIRO_HAS_WIN32_FONT
+		if (cairo_scaled_font_get_type (scaled_font) == CAIRO_FONT_TYPE_WIN32) {
+			if (_cairo_win32_scaled_font_is_bitmap (scaled_font))
+				return CAIRO_INT_STATUS_UNSUPPORTED;
+			else
+				return _cairo_win32_printing_surface_analyze_operation (surface, op, source);
+		}
+#endif
 
-    return status;
+#if CAIRO_HAS_DWRITE_FONT
+		if (cairo_scaled_font_get_type(scaled_font) == CAIRO_FONT_TYPE_DWRITE) {
+			return _cairo_win32_printing_surface_analyze_operation(surface, op, source);
+		}
+#endif
+
+		/* For non win32 fonts we need to check that each glyph has a
+		 * path available. If a path is not available,
+		 * _cairo_scaled_glyph_lookup() will return
+		 * CAIRO_INT_STATUS_UNSUPPORTED and a fallback image will be
+		 * used.
+		 */
+		_cairo_scaled_font_freeze_cache (scaled_font);
+		for (i = 0; i < num_glyphs; i++) {
+			status = _cairo_scaled_glyph_lookup (scaled_font,
+				glyphs[i].index,
+				CAIRO_SCALED_GLYPH_INFO_PATH,
+				&scaled_glyph);
+			if (status)
+				break;
+		}
+		_cairo_scaled_font_thaw_cache (scaled_font);
+		if (status)
+			return status;
+
+		return _cairo_win32_printing_surface_analyze_operation (surface, op, source);
+	}
+
+	if (source->type == CAIRO_PATTERN_TYPE_SOLID) {
+		cairo_solid_pattern_t *solid = (cairo_solid_pattern_t *) source;
+		COLORREF color;
+
+		color = _cairo_win32_printing_surface_flatten_transparency (surface,
+			&solid->color);
+		opaque = cairo_pattern_create_rgb (GetRValue (color) / 255.0,
+			GetGValue (color) / 255.0,
+			GetBValue (color) / 255.0);
+		if (opaque->status)
+			return opaque->status;
+		source = opaque;
+	}
+
+#if CAIRO_HAS_DWRITE_FONT
+	/* For a printer, the dwrite path is not desirable as it goes through the
+	* bitmap-blitting GDI interop route. Better to create a win32 (GDI) font
+	* so that ExtTextOut can be used, giving the printer driver the chance
+	* to do the right thing with the text.
+	*/
+	if (cairo_scaled_font_get_type(scaled_font) == CAIRO_FONT_TYPE_DWRITE) {
+		status = _cairo_dwrite_scaled_font_create_win32_scaled_font(scaled_font, &local_scaled_font);
+		if (status == CAIRO_STATUS_SUCCESS) {
+			scaled_font = local_scaled_font;
+		}
+		else {
+			/* Reset status; we'll fall back to drawing glyphs as paths */
+			status = CAIRO_STATUS_SUCCESS;
+		}
+	}
+#endif
+
+#if CAIRO_HAS_WIN32_FONT
+	if (cairo_scaled_font_get_type (scaled_font) == CAIRO_FONT_TYPE_WIN32 &&
+		source->type == CAIRO_PATTERN_TYPE_SOLID)
+	{
+		return _cairo_win32_printing_surface_emit_win32_glyphs (surface,
+			op,
+			source,
+			glyphs,
+			num_glyphs,
+			scaled_font,
+			clip);
+	}
+#endif
+
+	SaveDC (surface->win32.dc);
+	old_ctm = surface->ctm;
+	old_has_ctm = surface->has_ctm;
+	surface->has_ctm = TRUE;
+	surface->path_empty = TRUE;
+	_cairo_scaled_font_freeze_cache (scaled_font);
+	BeginPath (surface->win32.dc);
+	for (i = 0; i < num_glyphs; i++) {
+		status = _cairo_scaled_glyph_lookup (scaled_font,
+			glyphs[i].index,
+			CAIRO_SCALED_GLYPH_INFO_PATH,
+			&scaled_glyph);
+		if (status)
+			break;
+		surface->ctm = old_ctm;
+		cairo_matrix_translate (&surface->ctm, glyphs[i].x, glyphs[i].y);
+		status = _cairo_win32_printing_surface_emit_path (surface, scaled_glyph->path);
+	}
+	EndPath (surface->win32.dc);
+	_cairo_scaled_font_thaw_cache (scaled_font);
+	surface->ctm = old_ctm;
+	surface->has_ctm = old_has_ctm;
+	if (status == CAIRO_STATUS_SUCCESS && surface->path_empty == FALSE) {
+		if (source->type == CAIRO_PATTERN_TYPE_SOLID) {
+			status = _cairo_win32_printing_surface_select_solid_brush (surface, source);
+			if (status)
+				return status;
+
+			SetPolyFillMode (surface->win32.dc, WINDING);
+			FillPath (surface->win32.dc);
+			_cairo_win32_printing_surface_done_solid_brush (surface);
+		} else {
+			SelectClipPath (surface->win32.dc, RGN_AND);
+			status = _cairo_win32_printing_surface_paint_pattern (surface, source);
+		}
+	}
+	RestoreDC (surface->win32.dc, -1);
+
+	if (opaque)
+		cairo_pattern_destroy (opaque);
+
+	return status;
 }
 
 static const char **

@@ -299,6 +299,36 @@ _get_system_quality (void)
     }
 }
 
+BYTE
+cairo_win32_get_system_text_quality(void)
+{
+	BOOL font_smoothing;
+	UINT smoothing_type;
+
+	if (!SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &font_smoothing, 0)) {
+		_cairo_win32_print_gdi_error("_cairo_win32_get_system_text_quality");
+		return DEFAULT_QUALITY;
+	}
+
+	if (font_smoothing) {
+		if (_have_cleartype_quality()) {
+			if (!SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE,
+				0, &smoothing_type, 0)) {
+				_cairo_win32_print_gdi_error("_cairo_win32_get_system_text_quality");
+				return DEFAULT_QUALITY;
+			}
+
+			if (smoothing_type == FE_FONTSMOOTHINGCLEARTYPE)
+				return CLEARTYPE_QUALITY;
+		}
+
+		return ANTIALIASED_QUALITY;
+	}
+	else {
+		return DEFAULT_QUALITY;
+	}
+}
+
 /* If face_hfont is non-%NULL then font_matrix must be a simple scale by some
  * factor S, ctm must be the identity, logfont->lfHeight must be -S,
  * logfont->lfWidth, logfont->lfEscapement, logfont->lfOrientation must
@@ -1823,9 +1853,7 @@ const cairo_scaled_font_backend_t _cairo_win32_scaled_font_backend = {
     _cairo_win32_scaled_font_ucs4_to_index,
     _cairo_win32_scaled_font_load_truetype_table,
     _cairo_win32_scaled_font_index_to_ucs4,
-    _cairo_win32_scaled_font_is_synthetic,
-    _cairo_win32_scaled_font_index_to_glyph_name,
-    _cairo_win32_scaled_font_load_type1_data
+    _cairo_win32_scaled_font_is_synthetic
 };
 
 /* #cairo_win32_font_face_t */

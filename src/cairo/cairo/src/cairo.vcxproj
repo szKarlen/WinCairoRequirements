@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -104,7 +104,7 @@
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <AdditionalDependencies>Msimg32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Msimg32.lib;OpenGL32.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)include\cairo"
@@ -218,7 +218,6 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClCompile Include="cairo-boxes-intersect.c" />
     <ClCompile Include="cairo-boxes.c" />
     <ClCompile Include="cairo-cache.c" />
-    <ClCompile Include="cairo-cff-subset.c" />
     <ClCompile Include="cairo-clip-boxes.c" />
     <ClCompile Include="cairo-clip-polygon.c" />
     <ClCompile Include="cairo-clip-region.c" />
@@ -234,6 +233,7 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClCompile Include="cairo-default-context.c" />
     <ClCompile Include="cairo-deflate-stream.c" />
     <ClCompile Include="cairo-device.c" />
+    <ClCompile Include="cairo-dwrite-font.cpp" />
     <ClCompile Include="cairo-error.c" />
     <ClCompile Include="cairo-fallback-compositor.c" />
     <ClCompile Include="cairo-fixed.c" />
@@ -287,15 +287,11 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClCompile Include="cairo-path-stroke.c" />
     <ClCompile Include="cairo-path.c" />
     <ClCompile Include="cairo-pattern.c" />
-    <ClCompile Include="cairo-pdf-operators.c" />
-    <ClCompile Include="cairo-pdf-shading.c" />
-    <ClCompile Include="cairo-pdf-surface.c" />
     <ClCompile Include="cairo-pen.c" />
     <ClCompile Include="cairo-png.c" />
     <ClCompile Include="cairo-polygon-intersect.c" />
     <ClCompile Include="cairo-polygon-reduce.c" />
     <ClCompile Include="cairo-polygon.c" />
-    <ClCompile Include="cairo-ps-surface.c" />
     <ClCompile Include="cairo-raster-source-pattern.c" />
     <ClCompile Include="cairo-recording-surface.c" />
     <ClCompile Include="cairo-rectangle.c" />
@@ -332,7 +328,6 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClCompile Include="cairo-type1-fallback.c" />
     <ClCompile Include="cairo-type1-glyph-names.c" />
     <ClCompile Include="cairo-type1-subset.c" />
-    <ClCompile Include="cairo-type3-glyph-surface.c" />
     <ClCompile Include="cairo-unicode.c" />
     <ClCompile Include="cairo-user-font.c" />
     <ClCompile Include="cairo-version.c" />
@@ -369,6 +364,7 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClInclude Include="cairo-default-context-private.h" />
     <ClInclude Include="cairo-deprecated.h" />
     <ClInclude Include="cairo-device-private.h" />
+    <ClInclude Include="cairo-dwrite-private.h" />
     <ClInclude Include="cairo-error-inline.h" />
     <ClInclude Include="cairo-error-private.h" />
     <ClInclude Include="cairo-features.h" />
@@ -405,12 +401,9 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClInclude Include="cairo-path-private.h" />
     <ClInclude Include="cairo-pattern-inline.h" />
     <ClInclude Include="cairo-pattern-private.h" />
-    <ClInclude Include="cairo-pdf-operators-private.h" />
-    <ClInclude Include="cairo-pdf-shading-private.h" />
-    <ClInclude Include="cairo-pdf-surface-private.h" />
     <ClInclude Include="cairo-pdf.h" />
+    <ClInclude Include="cairo-pixman-private.h" />
     <ClInclude Include="cairo-private.h" />
-    <ClInclude Include="cairo-ps-surface-private.h" />
     <ClInclude Include="cairo-ps.h" />
     <ClInclude Include="cairo-recording-surface-inline.h" />
     <ClInclude Include="cairo-recording-surface-private.h" />
@@ -443,12 +436,12 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClInclude Include="cairo-tristrip-private.h" />
     <ClInclude Include="cairo-truetype-subset-private.h" />
     <ClInclude Include="cairo-type1-private.h" />
-    <ClInclude Include="cairo-type3-glyph-surface-private.h" />
     <ClInclude Include="cairo-types-private.h" />
     <ClInclude Include="cairo-user-font-private.h" />
     <ClInclude Include="cairo-version.h" />
     <ClInclude Include="cairo-wideint-private.h" />
     <ClInclude Include="cairo-wideint-type-private.h" />
+    <ClInclude Include="cairo-win32-refptr.h" />
     <ClInclude Include="cairo-win32.h" />
     <ClInclude Include="cairo-xml.h" />
     <ClInclude Include="cairo.h" />

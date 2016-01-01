@@ -1384,23 +1384,11 @@ skip_subrs:
     if (unlikely (font->subset_index_to_glyphs == NULL))
         return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
-    backend = font->scaled_font_subset->scaled_font->backend;
-    if (!backend->index_to_glyph_name)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
-
     /* Find the glyph number corresponding to each glyph in the subset
      * and mark it as in use */
 
     for (i = 0; i < font->scaled_font_subset->num_glyphs; i++) {
 	unsigned long index;
-
-	status = backend->index_to_glyph_name (font->scaled_font_subset->scaled_font,
-					       font->glyph_names,
-					       font->base.num_glyphs,
-					       font->scaled_font_subset->glyphs[i],
-					       &index);
-	if (unlikely(status))
-	    return status;
 
 	cairo_type1_font_subset_use_glyph (font, index);
     }
@@ -1633,24 +1621,10 @@ cairo_type1_font_subset_generate (void       *abstract_font,
     cairo_status_t status;
     unsigned long data_length;
 
-    scaled_font = font->scaled_font_subset->scaled_font;
-    if (!scaled_font->backend->load_type1_data)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
-
-    status = scaled_font->backend->load_type1_data (scaled_font, 0, NULL, &data_length);
-    if (status)
-	return CAIRO_INT_STATUS_UNSUPPORTED;
-
     font->type1_length = data_length;
     font->type1_data = malloc (font->type1_length);
     if (unlikely (font->type1_data == NULL))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-
-    status = scaled_font->backend->load_type1_data (scaled_font, 0,
-						    (unsigned char *) font->type1_data,
-						    &data_length);
-    if (unlikely (status))
-        return status;
 
     if (!check_fontdata_is_type1 ((unsigned char *)font->type1_data, data_length))
 	return CAIRO_INT_STATUS_UNSUPPORTED;
@@ -1718,11 +1692,6 @@ _cairo_type1_subset_init (cairo_type1_subset_t		*type1_subset,
     unsigned long length;
     unsigned int i;
     char buf[30];
-
-    /* We need to use a fallback font generated from the synthesized outlines. */
-    if (scaled_font_subset->scaled_font->backend->is_synthetic &&
-	scaled_font_subset->scaled_font->backend->is_synthetic (scaled_font_subset->scaled_font))
-	return CAIRO_INT_STATUS_UNSUPPORTED;
 
     status = _cairo_type1_font_subset_init (&font, scaled_font_subset, hex_encode);
     if (unlikely (status))
@@ -1800,20 +1769,9 @@ _cairo_type1_scaled_font_is_type1 (cairo_scaled_font_t *scaled_font)
     unsigned long length;
     unsigned char buf[64];
 
-    if (!scaled_font->backend->load_type1_data)
-	return FALSE;
-
-    status = scaled_font->backend->load_type1_data (scaled_font, 0, NULL, &length);
-    if (status)
-	return FALSE;
-
     /* We only need a few bytes to test for Type 1 */
     if (length > sizeof (buf))
 	length = sizeof (buf);
-
-    status = scaled_font->backend->load_type1_data (scaled_font, 0, buf, &length);
-    if (status)
-	return FALSE;
 
     return check_fontdata_is_type1 (buf, length);
 }

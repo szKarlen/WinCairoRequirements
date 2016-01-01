@@ -1548,7 +1548,8 @@ typedef enum _cairo_font_type {
     CAIRO_FONT_TYPE_FT,
     CAIRO_FONT_TYPE_WIN32,
     CAIRO_FONT_TYPE_QUARTZ,
-    CAIRO_FONT_TYPE_USER
+    CAIRO_FONT_TYPE_USER,
+    CAIRO_FONT_TYPE_DWRITE
 } cairo_font_type_t;
 
 cairo_public cairo_font_type_t
@@ -2344,6 +2345,7 @@ cairo_surface_status (cairo_surface_t *surface);
  * @CAIRO_SURFACE_TYPE_SUBSURFACE: The surface is a subsurface created with
  *   cairo_surface_create_for_rectangle(), since 1.10
  * @CAIRO_SURFACE_TYPE_COGL: This surface is of type Cogl, since 1.12
+ * @CAIRO_SURFACE_TYPE_D2D: The surface is of type Direct2D
  *
  * #cairo_surface_type_t is used to describe the type of a given
  * surface. The surface types are also known as "backends" or "surface
@@ -2394,7 +2396,8 @@ typedef enum _cairo_surface_type {
     CAIRO_SURFACE_TYPE_XML,
     CAIRO_SURFACE_TYPE_SKIA,
     CAIRO_SURFACE_TYPE_SUBSURFACE,
-    CAIRO_SURFACE_TYPE_COGL
+    CAIRO_SURFACE_TYPE_COGL,
+    CAIRO_SURFACE_TYPE_D2D
 } cairo_surface_type_t;
 
 cairo_public cairo_surface_type_t

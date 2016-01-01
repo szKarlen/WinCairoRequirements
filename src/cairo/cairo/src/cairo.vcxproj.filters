@@ -16,29 +16,17 @@
     <Filter Include="Headers %28Private%29">
       <UniqueIdentifier>{5c94f85e-dff3-4c40-b1f4-4a5adbbea044}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headers %28Private%29\PDF">
-      <UniqueIdentifier>{e226597f-19b1-48b3-9c81-23b92e9d159e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headers %28Private%29\Font">
       <UniqueIdentifier>{6a18776f-8677-4791-978c-c5503e58e3e3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Font">
       <UniqueIdentifier>{ceddc437-8ff0-45db-a52a-09607ad89fcf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\PDF">
-      <UniqueIdentifier>{d6dd6f56-c659-4250-b3e9-2b8eda6adf41}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers %28Private%29\PS">
-      <UniqueIdentifier>{ce023704-3bbe-4f30-8f68-65ed47da8f44}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headers %28Private%29\SVG">
       <UniqueIdentifier>{4972b544-0ebc-48df-af49-95e1e2317e8b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\SVG">
       <UniqueIdentifier>{cd9bfcf3-35a6-4be6-81a3-1f8ba2a7f2c0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\PS">
-      <UniqueIdentifier>{ffb4ebdc-423c-4dcd-b4c5-be58bbcf6fd9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Headers %28Private%29\Win32">
       <UniqueIdentifier>{0c56639c-3942-42c8-aa99-382c22085a24}</UniqueIdentifier>
@@ -360,9 +348,6 @@
     <ClCompile Include="cairo-tristrip.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cairo-cff-subset.c">
-      <Filter>Source Files\Font</Filter>
-    </ClCompile>
     <ClCompile Include="cairo-scaled-font-subsets.c">
       <Filter>Source Files\Font</Filter>
     </ClCompile>
@@ -378,26 +363,11 @@
     <ClCompile Include="cairo-type1-subset.c">
       <Filter>Source Files\Font</Filter>
     </ClCompile>
-    <ClCompile Include="cairo-type3-glyph-surface.c">
-      <Filter>Source Files\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="cairo-pdf-operators.c">
-      <Filter>Source Files\PDF</Filter>
-    </ClCompile>
-    <ClCompile Include="cairo-pdf-shading.c">
-      <Filter>Source Files\PDF</Filter>
-    </ClCompile>
     <ClCompile Include="cairo-png.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cairo-ps-surface.c">
-      <Filter>Source Files\PS</Filter>
-    </ClCompile>
     <ClCompile Include="cairo-deflate-stream.c">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cairo-pdf-surface.c">
-      <Filter>Source Files\PDF</Filter>
     </ClCompile>
     <ClCompile Include="cairo-svg-surface.c">
       <Filter>Source Files\SVG</Filter>
@@ -478,6 +448,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cairo-line.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cairo-dwrite-font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -749,21 +722,6 @@
     <ClInclude Include="cairo-type1-private.h">
       <Filter>Headers %28Private%29\Font</Filter>
     </ClInclude>
-    <ClInclude Include="cairo-type3-glyph-surface-private.h">
-      <Filter>Headers %28Private%29\Font</Filter>
-    </ClInclude>
-    <ClInclude Include="cairo-pdf-operators-private.h">
-      <Filter>Headers %28Private%29\PDF</Filter>
-    </ClInclude>
-    <ClInclude Include="cairo-pdf-shading-private.h">
-      <Filter>Headers %28Private%29\PDF</Filter>
-    </ClInclude>
-    <ClInclude Include="cairo-ps-surface-private.h">
-      <Filter>Headers %28Private%29\PS</Filter>
-    </ClInclude>
-    <ClInclude Include="cairo-pdf-surface-private.h">
-      <Filter>Headers %28Private%29\PDF</Filter>
-    </ClInclude>
     <ClInclude Include="cairo-svg-surface-private.h">
       <Filter>Headers %28Private%29\SVG</Filter>
     </ClInclude>
@@ -795,6 +753,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cairo-line-private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cairo-pixman-private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cairo-dwrite-private.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cairo-win32-refptr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
