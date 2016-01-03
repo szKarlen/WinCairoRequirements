@@ -99,7 +99,7 @@ private:
 
 	IDWriteFactory* factory_;
 	IDWriteFontFile* currentFile_;
-	std::vector<void*> resourceIDs_;
+	std::vector<cairo_font_data> resourceIDs_;
 	size_t nextIndex_;
 };
 
@@ -139,7 +139,7 @@ private:
 class CairoDWriteFontFileStream : public IDWriteFontFileStream
 {
 public:
-	explicit CairoDWriteFontFileStream(const void* resourceData);
+	explicit CairoDWriteFontFileStream(const cairo_font_data resourceData);
 
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** ppvObject);
 	virtual ULONG STDMETHODCALLTYPE AddRef();

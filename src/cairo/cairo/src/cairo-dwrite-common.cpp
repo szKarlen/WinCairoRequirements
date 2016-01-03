@@ -4,9 +4,9 @@
 #include "cairo-dwrite-private.h"
 #include "cairo-win32.h"
 
-static std::unordered_map<cairo_font_face_handle_t*, void*>* _handles = new std::unordered_map<cairo_font_face_handle_t*, void*>();
+static std::unordered_map<cairo_font_face_handle_t*, cairo_font_data>* _handles = new std::unordered_map<cairo_font_face_handle_t*, cairo_font_data>();
 static unsigned long _handleId;
-static std::vector<void*>* _fonts = new std::vector<void*>();
+static std::vector<cairo_font_data>* _fonts = new std::vector<cairo_font_data>();
 
 UINT* getFontsList() {
 	return reinterpret_cast<UINT*>(_fonts);
@@ -40,9 +40,10 @@ cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ DWORD 
 	char* nData = new char[cjSize];
 	memcpy(nData, data, cjSize);
 
-	_fonts->push_back(nData);
+	cairo_font_data holder = { nData, cjSize };
+	_fonts->push_back(holder);
 	auto id = reinterpret_cast<cairo_font_face_handle_t*>(InterlockedIncrement(&_handleId));
-	(*_handles)[id] = data;
+	(*_handles)[id] = holder;
 
 	LeaveCriticalSection(&critSec);
 
@@ -62,7 +63,7 @@ cairo_dwrite_unregister_font_face(cairo_font_face_handle_t* handle)
 	_fonts->erase(std::remove(_fonts->begin(), _fonts->end(), item), _fonts->end());
 	_handles->erase(it);
 
-	delete[] item;
+	delete[] item.data;
 
 	LeaveCriticalSection(&critSec);
 

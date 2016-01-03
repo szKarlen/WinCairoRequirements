@@ -12,6 +12,7 @@
 #include "cairo-dwrite-resources.h"
 #include "cairo-dwrite-private.h"
 #include <vector>
+#include "cairo-dwrite-common.h"
 
 CairoDWriteFontContext::CairoDWriteFontContext() : hr_(S_FALSE)
 {
@@ -127,7 +128,7 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontCollectionLoader::CreateEnumeratorFromK
 	if (enumerator == NULL)
 		return E_OUTOFMEMORY;
 
-	auto vec = reinterpret_cast<std::vector<void*>*>((void*)collectionKey);
+	auto vec = reinterpret_cast<std::vector<cairo_font_data>*>((void*)collectionKey);
 	UINT32 const resourceCount = vec->size();
 
 	hr = enumerator->Initialize(
@@ -163,7 +164,7 @@ HRESULT CairoDWriteFontFileEnumerator::Initialize(
 {
 	try
 	{
-		auto vec = reinterpret_cast<std::vector<void*>*>((void*)resourceIDs);
+		auto vec = reinterpret_cast<std::vector<cairo_font_data>*>((void*)resourceIDs);
 		resourceIDs_.swap(*vec);
 		//resourceIDs_.assign(resourceIDs, resourceIDs + resourceCount);
 	}
@@ -214,7 +215,7 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontFileEnumerator::MoveNext(OUT BOOL* hasC
 	{
 		hr = factory_->CreateCustomFontFileReference(
 			&resourceIDs_[nextIndex_],
-			sizeof(UINT),
+			sizeof(cairo_font_data),
 			CairoDWriteFontFileLoader::GetLoader(),
 			&currentFile_
 			);
@@ -280,10 +281,10 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontFileLoader::CreateStreamFromKey(
 {
 	*fontFileStream = NULL;
 
-	if (fontFileReferenceKeySize != sizeof(UINT))
+	if (fontFileReferenceKeySize != sizeof(cairo_font_data))
 		return E_INVALIDARG;
 
-	CairoDWriteFontFileStream* stream = new(std::nothrow) CairoDWriteFontFileStream(fontFileReferenceKey);
+	CairoDWriteFontFileStream* stream = new(std::nothrow) CairoDWriteFontFileStream(*static_cast<cairo_font_data*>((void*)fontFileReferenceKey));
 	if (stream == NULL)
 		return E_OUTOFMEMORY;
 
@@ -298,12 +299,12 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontFileLoader::CreateStreamFromKey(
 	return S_OK;
 }
 
-CairoDWriteFontFileStream::CairoDWriteFontFileStream(const void* resourceData) :
+CairoDWriteFontFileStream::CairoDWriteFontFileStream(const cairo_font_data resourceData) :
 refCount_(0),
-resourcePtr_(resourceData),
-resourceSize_(0)
+resourcePtr_(resourceData.data),
+resourceSize_(resourceData.size)
 {
-	
+
 }
 
 // IUnknown methods

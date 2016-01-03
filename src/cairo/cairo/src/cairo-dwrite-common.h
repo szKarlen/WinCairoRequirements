@@ -11,6 +11,16 @@
 #include <vector>
 #include <algorithm>
 
+struct cairo_font_data
+{
+	void* data;
+	UINT size;
+
+	bool operator == (const cairo_font_data& rhs) {
+		return rhs.data == this->data;
+	}
+};
+
 UINT* getFontsList();
 
 void cairo_begin_custom_fonts_update();
