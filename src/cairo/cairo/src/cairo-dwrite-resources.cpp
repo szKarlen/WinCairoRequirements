@@ -213,8 +213,9 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontFileEnumerator::MoveNext(OUT BOOL* hasC
 
 	if (nextIndex_ < resourceIDs_.size())
 	{
+		cairo_font_data data = resourceIDs_[nextIndex_];
 		hr = factory_->CreateCustomFontFileReference(
-			&resourceIDs_[nextIndex_],
+			&data,
 			sizeof(cairo_font_data),
 			CairoDWriteFontFileLoader::GetLoader(),
 			&currentFile_
@@ -299,7 +300,7 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontFileLoader::CreateStreamFromKey(
 	return S_OK;
 }
 
-CairoDWriteFontFileStream::CairoDWriteFontFileStream(const cairo_font_data resourceData) :
+CairoDWriteFontFileStream::CairoDWriteFontFileStream(const cairo_font_data& resourceData) :
 refCount_(0),
 resourcePtr_(resourceData.data),
 resourceSize_(resourceData.size)

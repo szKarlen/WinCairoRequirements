@@ -7,10 +7,12 @@
 //
 //----------------------------------------------------------------------------
 
-#pragma once
+#ifndef _CAIRO_DWRITE_RESOURCES_H_
+#define _CAIRO_DWRITE_RESOURCES_H_
 
 #include <Windows.h>
 #include "cairo-resources-common.h"
+#include "cairo-dwrite-common.h"
 
 class CairoDWriteFontContext
 {
@@ -139,7 +141,7 @@ private:
 class CairoDWriteFontFileStream : public IDWriteFontFileStream
 {
 public:
-	explicit CairoDWriteFontFileStream(const cairo_font_data resourceData);
+	explicit CairoDWriteFontFileStream(const cairo_font_data& resourceData);
 
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** ppvObject);
 	virtual ULONG STDMETHODCALLTYPE AddRef();
@@ -177,3 +179,4 @@ private:
 	static HMODULE const moduleHandle_;
 	static HMODULE GetCurrentModule();
 };
+#endif /* _CAIRO_DWRITE_RESOURCES_H_ */
