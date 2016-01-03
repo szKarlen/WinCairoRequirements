@@ -1220,20 +1220,21 @@ cairo_dwrite_font_face_create_for_logfontw_internal(LOGFONTW *logfont, IDWriteFo
 		DWRITE_FONT_WEIGHT weight = LogFontWeightToDWrite(logfont->lfWeight);
 		DWRITE_FONT_STYLE style = logfont->lfItalic == TRUE ? DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL;
 
-		DWriteFactory::Instance()->CreateTextFormat(logfont->lfFaceName,
+		if (SUCCEEDED(DWriteFactory::Instance()->CreateTextFormat(logfont->lfFaceName,
 			collection,
 			weight,
 			style,
 			DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-			MAX(-logfont->lfHeight, 1), L"", &dwriteTextFormat);
+			MAX(-logfont->lfHeight, 1), L"", &dwriteTextFormat)))
+		{
+			IDWriteFontCollection* dwriteFontCollection;
+			dwriteTextFormat->GetFontCollection(&dwriteFontCollection);
 
-		IDWriteFontCollection* dwriteFontCollection;
-		dwriteTextFormat->GetFontCollection(&dwriteFontCollection);
+			IDWriteFontFamily* drwiteFontFamily;
+			dwriteFontCollection->GetFontFamily(0, &drwiteFontFamily);
 
-		IDWriteFontFamily* drwiteFontFamily;
-		dwriteFontCollection->GetFontFamily(0, &drwiteFontFamily);
-
-		drwiteFontFamily->GetFont(0, &dwriteFont);
+			drwiteFontFamily->GetFont(0, &dwriteFont);
+		}
 	}
 
 	IDWriteFontFace* dwriteFontFace;
