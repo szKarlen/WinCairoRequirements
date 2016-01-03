@@ -453,6 +453,12 @@
     <ClCompile Include="cairo-dwrite-font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cairo-dwrite-common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cairo-dwrite-resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cairo-deprecated.h">
@@ -762,6 +768,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cairo-win32-refptr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cairo-dwrite-common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cairo-resources-common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cairo-dwrite-resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

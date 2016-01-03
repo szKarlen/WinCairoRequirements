@@ -156,7 +156,7 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
       <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Msimg32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Msimg32.lib;OpenGL32.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
@@ -233,7 +233,9 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClCompile Include="cairo-default-context.c" />
     <ClCompile Include="cairo-deflate-stream.c" />
     <ClCompile Include="cairo-device.c" />
+    <ClCompile Include="cairo-dwrite-common.cpp" />
     <ClCompile Include="cairo-dwrite-font.cpp" />
+    <ClCompile Include="cairo-dwrite-resources.cpp" />
     <ClCompile Include="cairo-error.c" />
     <ClCompile Include="cairo-fallback-compositor.c" />
     <ClCompile Include="cairo-fixed.c" />
@@ -364,7 +366,9 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClInclude Include="cairo-default-context-private.h" />
     <ClInclude Include="cairo-deprecated.h" />
     <ClInclude Include="cairo-device-private.h" />
+    <ClInclude Include="cairo-dwrite-common.h" />
     <ClInclude Include="cairo-dwrite-private.h" />
+    <ClInclude Include="cairo-dwrite-resources.h" />
     <ClInclude Include="cairo-error-inline.h" />
     <ClInclude Include="cairo-error-private.h" />
     <ClInclude Include="cairo-features.h" />
@@ -409,6 +413,7 @@ xcopy /Y /R "$(ProjectDir)cairo-xml.h" "$(SolutionDir)include\cairo"
     <ClInclude Include="cairo-recording-surface-private.h" />
     <ClInclude Include="cairo-reference-count-private.h" />
     <ClInclude Include="cairo-region-private.h" />
+    <ClInclude Include="cairo-resources-common.h" />
     <ClInclude Include="cairo-rtree-private.h" />
     <ClInclude Include="cairo-scaled-font-private.h" />
     <ClInclude Include="cairo-scaled-font-subsets-private.h" />

@@ -1,3 +1,4 @@
+#pragma once
 /* -*- Mode: c; tab-width: 8; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* Cairo - a vector graphics library with display and print output
  *
@@ -35,6 +36,8 @@
  */
 #include <dwrite.h>
 #include <d2d1.h>
+#include "cairo.h"
+#include "cairoint.h"
 
 // DirectWrite is not available on all platforms.
 typedef HRESULT (WINAPI*DWriteCreateFactoryFunc)(
@@ -75,7 +78,6 @@ public:
 		    DWRITE_FACTORY_TYPE_SHARED,
 		    __uuidof(IDWriteFactory),
 		    reinterpret_cast<IUnknown**>(&mFactoryInstance));
-		assert(SUCCEEDED(hr));
 	    }
 	}
 	return mFactoryInstance;
@@ -86,7 +88,6 @@ public:
 	if (!mSystemCollection) {
 	    if (Instance()) {
 		HRESULT hr = Instance()->GetSystemFontCollection(&mSystemCollection);
-		assert(SUCCEEDED(hr));
 	    }
 	}
 	return mSystemCollection;

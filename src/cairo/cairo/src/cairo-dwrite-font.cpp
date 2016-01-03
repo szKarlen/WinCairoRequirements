@@ -50,6 +50,10 @@
 #include "cairo-region-private.h"
 #include <float.h>
 
+#include "cairo-dwrite-common.h"
+#include "cairo-resources-common.h"
+#include "cairo-dwrite-resources.h"
+
 typedef HRESULT (WINAPI*D2D1CreateFactoryFunc)(
     D2D1_FACTORY_TYPE factoryType,
     REFIID iid,
@@ -1188,7 +1192,7 @@ static DWRITE_FONT_WEIGHT LogFontWeightToDWrite(LONG lfWeight)
 }
 
 cairo_font_face_t*
-cairo_dwrite_font_face_create_for_logfontw(LOGFONTW *logfont)
+cairo_dwrite_font_face_create_for_logfontw_internal(LOGFONTW *logfont, IDWriteFontCollection* collection)
 {
 	if (logfont->lfEscapement != 0 || logfont->lfOrientation != 0 ||
 		logfont->lfWidth != 0) {
@@ -1216,12 +1220,12 @@ cairo_dwrite_font_face_create_for_logfontw(LOGFONTW *logfont)
 		DWRITE_FONT_WEIGHT weight = LogFontWeightToDWrite(logfont->lfWeight);
 		DWRITE_FONT_STYLE style = logfont->lfItalic == TRUE ? DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL;
 
-		DWriteFactory::Instance()->CreateTextFormat(logfont->lfFaceName, 
-			nullptr,
+		DWriteFactory::Instance()->CreateTextFormat(logfont->lfFaceName,
+			collection,
 			weight,
 			style,
 			DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-			MAX(-logfont->lfHeight, 1), L"ru-RU", &dwriteTextFormat);
+			MAX(-logfont->lfHeight, 1), L"", &dwriteTextFormat);
 
 		IDWriteFontCollection* dwriteFontCollection;
 		dwriteTextFormat->GetFontCollection(&dwriteFontCollection);
@@ -1256,6 +1260,46 @@ cairo_dwrite_font_face_create_for_logfontw(LOGFONTW *logfont)
 	gdiInterop->Release();
 
 	return font_face;
+}
+
+cairo_font_face_t*
+cairo_dwrite_font_face_create_for_logfontw(LOGFONTW *logfont)
+{
+	return cairo_dwrite_font_face_create_for_logfontw_internal(logfont, nullptr);
+}
+
+cairo_font_face_t*
+cairo_dwrite_font_face_create_custom_for_logfontw(LOGFONTW *logfont)
+{
+	auto fontResourceIDs = getFontsList();
+	if (!fontResourceIDs)
+		return cairo_dwrite_font_face_create_for_logfontw(logfont);
+
+	HRESULT hr = S_OK;
+	CairoDWriteFontContext fontContext_;
+	hr = fontContext_.Initialize();
+	if (FAILED(hr))
+		_cairo_error_throw(CAIRO_STATUS_NO_MEMORY);
+
+	cairo_begin_custom_fonts_update();
+
+	IDWriteFontCollection* fontCollection = NULL;
+	hr = fontContext_.CreateFontCollection(
+		fontResourceIDs,
+		sizeof(fontResourceIDs),
+		&fontCollection
+		);
+
+	if (FAILED(hr))
+		_cairo_error_throw(CAIRO_STATUS_NO_MEMORY);
+
+	cairo_font_face_t* result = cairo_dwrite_font_face_create_for_logfontw_internal(logfont, fontCollection);
+
+	SafeRelease(&fontCollection);
+
+	cairo_end_custom_fonts_update();
+
+	return result;
 }
 
 void* cairo_dwrite_font_face_get(cairo_scaled_font_t* scaled_font)
