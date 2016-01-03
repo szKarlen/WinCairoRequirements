@@ -33,9 +33,9 @@ void cairo_end_custom_fonts_update() {
 }
 
 cairo_font_face_handle_t*
-cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ DWORD cjSize)
+cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ unsigned long cjSize)
 {
-	EnterCriticalSection(&critSec);
+	cairo_begin_custom_fonts_update();
 
 	char* nData = new char[cjSize];
 	memcpy(nData, data, cjSize);
@@ -45,7 +45,7 @@ cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ DWORD 
 	auto id = reinterpret_cast<cairo_font_face_handle_t*>(InterlockedIncrement(&_handleId));
 	(*_handles)[id] = holder;
 
-	LeaveCriticalSection(&critSec);
+	cairo_end_custom_fonts_update();
 
 	return (id);
 }
@@ -53,7 +53,7 @@ cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ DWORD 
 cairo_status_t
 cairo_dwrite_unregister_font_face(cairo_font_face_handle_t* handle)
 {
-	EnterCriticalSection(&critSec);
+	cairo_begin_custom_fonts_update();
 
 	auto it = _handles->find(handle);
 	if (it == _handles->end()) {
@@ -65,7 +65,7 @@ cairo_dwrite_unregister_font_face(cairo_font_face_handle_t* handle)
 
 	delete[] item.data;
 
-	LeaveCriticalSection(&critSec);
+	cairo_end_custom_fonts_update();
 
 	return CAIRO_STATUS_SUCCESS;
 }
