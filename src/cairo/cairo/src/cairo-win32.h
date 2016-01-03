@@ -145,10 +145,10 @@ cairo_dwrite_font_face_create_custom_for_logfontw(LOGFONTW *logfont);
 
 typedef struct _cairo_font_face_handle cairo_font_face_handle_t;
 
-cairo_public cairo_font_face_handle_t*
-cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ DWORD cjSize);
+cairo_public cairo_font_face_handle_t* _cdecl
+cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ unsigned long cjSize);
 
-cairo_public cairo_status_t
+cairo_public cairo_status_t _cdecl
 cairo_dwrite_unregister_font_face(cairo_font_face_handle_t* handle);
 
 #endif /* CAIRO_HAS_DWRITE_FONT */
