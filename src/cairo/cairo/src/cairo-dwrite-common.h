@@ -21,7 +21,7 @@ struct cairo_font_data
 	}
 };
 
-UINT* getFontsList();
+UINT* getFontsList(size_t* fontsCount);
 
 void cairo_begin_custom_fonts_update();
 

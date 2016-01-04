@@ -1272,8 +1272,9 @@ cairo_dwrite_font_face_create_for_logfontw(LOGFONTW *logfont)
 cairo_font_face_t*
 cairo_dwrite_font_face_create_custom_for_logfontw(LOGFONTW *logfont)
 {
-	auto fontResourceIDs = getFontsList();
-	if (!fontResourceIDs)
+	size_t fontsCount;
+	auto fontResourceIDs = getFontsList(&fontsCount);
+	if (!fontResourceIDs || fontsCount == 0)
 		return cairo_dwrite_font_face_create_for_logfontw(logfont);
 
 	HRESULT hr = S_OK;
@@ -1287,7 +1288,7 @@ cairo_dwrite_font_face_create_custom_for_logfontw(LOGFONTW *logfont)
 	IDWriteFontCollection* fontCollection = NULL;
 	hr = fontContext_.CreateFontCollection(
 		fontResourceIDs,
-		sizeof(fontResourceIDs),
+		sizeof(cairo_font_data)*fontsCount,
 		&fontCollection
 		);
 

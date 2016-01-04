@@ -119,7 +119,7 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontCollectionLoader::CreateEnumeratorFromK
 
 	HRESULT hr = S_OK;
 
-	if (collectionKeySize % sizeof(UINT) != 0)
+	if (collectionKeySize % sizeof(cairo_font_data) != 0)
 		return E_INVALIDARG;
 
 	CairoDWriteFontFileEnumerator* enumerator = new(std::nothrow) CairoDWriteFontFileEnumerator(
@@ -128,8 +128,7 @@ HRESULT STDMETHODCALLTYPE CairoDWriteFontCollectionLoader::CreateEnumeratorFromK
 	if (enumerator == NULL)
 		return E_OUTOFMEMORY;
 
-	auto vec = reinterpret_cast<std::vector<cairo_font_data>*>((void*)collectionKey);
-	UINT32 const resourceCount = vec->size();
+	UINT32 const resourceCount = collectionKeySize / sizeof(cairo_font_data);
 
 	hr = enumerator->Initialize(
 		static_cast<UINT const*>(collectionKey),
@@ -164,9 +163,8 @@ HRESULT CairoDWriteFontFileEnumerator::Initialize(
 {
 	try
 	{
-		auto vec = reinterpret_cast<std::vector<cairo_font_data>*>((void*)resourceIDs);
-		resourceIDs_.swap(*vec);
-		//resourceIDs_.assign(resourceIDs, resourceIDs + resourceCount);
+		auto data = reinterpret_cast<cairo_font_data*>((void*)resourceIDs);
+		resourceIDs_.assign(data, data + resourceCount);
 	}
 	catch (...)
 	{

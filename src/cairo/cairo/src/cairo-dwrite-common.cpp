@@ -8,8 +8,9 @@ static std::unordered_map<cairo_font_face_handle_t*, cairo_font_data>* _handles 
 static unsigned long _handleId;
 static std::vector<cairo_font_data>* _fonts = new std::vector<cairo_font_data>();
 
-UINT* getFontsList() {
-	return reinterpret_cast<UINT*>(_fonts);
+UINT* getFontsList(size_t* fontsCount) {
+	*fontsCount = _fonts->size();
+	return reinterpret_cast<UINT*>(_fonts->data());
 }
 
 static CRITICAL_SECTION critSec;
