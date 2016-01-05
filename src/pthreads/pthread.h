@@ -303,11 +303,13 @@ enum {
 #endif
 
 #ifndef HAVE_STRUCT_TIMESPEC
+#if (_MSC_VER < 1900)
 #define HAVE_STRUCT_TIMESPEC 1
 struct timespec {
-        time_t tv_sec;
-        long tv_nsec;
+	time_t tv_sec;
+	long tv_nsec;
 };
+#endif
 #endif /* HAVE_STRUCT_TIMESPEC */
 
 #ifndef SIG_BLOCK
