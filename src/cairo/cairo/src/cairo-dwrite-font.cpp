@@ -666,7 +666,9 @@ _cairo_dwrite_scaled_show_glyphs(void			*scaled_font,
 	    DWriteFactory::Instance()->CreateGlyphRunAnalysis(&run,
 							      1.0f,
 							      NULL,
-							      DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC,
+							      dwritesf->base.font_matrix.yy < 16.0 
+										? DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL
+										: DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC,
 							      DWRITE_MEASURING_MODE_NATURAL,
 							      0,
 							      0,
@@ -676,7 +678,9 @@ _cairo_dwrite_scaled_show_glyphs(void			*scaled_font,
 	    DWriteFactory::Instance()->CreateGlyphRunAnalysis(&run,
 							      1.0f,
 							      &dwmatrix,
-							      DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC,
+								  dwritesf->base.font_matrix.yy < 16.0
+										? DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL
+										: DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC,
 							      DWRITE_MEASURING_MODE_NATURAL,
 							      0,
 							      0,
@@ -1230,10 +1234,54 @@ cairo_dwrite_font_face_create_for_logfontw_internal(LOGFONTW *logfont, IDWriteFo
 			IDWriteFontCollection* dwriteFontCollection;
 			dwriteTextFormat->GetFontCollection(&dwriteFontCollection);
 
-			IDWriteFontFamily* drwiteFontFamily;
-			dwriteFontCollection->GetFontFamily(0, &drwiteFontFamily);
+			auto count = dwriteFontCollection->GetFontFamilyCount();
+			for (size_t fontIndex = 0; fontIndex < count; fontIndex++)
+			{
+				IDWriteFontFamily* drwiteFontFamily;
+				dwriteFontCollection->GetFontFamily(fontIndex, &drwiteFontFamily);
 
-			drwiteFontFamily->GetFont(0, &dwriteFont);
+				IDWriteLocalizedStrings* names;
+				drwiteFontFamily->GetFamilyNames(&names);
+
+				auto namesCount = names->GetCount();
+				if (namesCount > 0)
+				{
+					UINT32 length = 0;
+					names->GetStringLength(0, &length);
+
+					wchar_t* fontName = new (std::nothrow) wchar_t[length + 1];
+					names->GetString(0, fontName, length + 1);
+
+					auto result = wcscmp(fontName, logfont->lfFaceName);
+					if (result == 0 
+						&& SUCCEEDED(drwiteFontFamily->GetFirstMatchingFont(weight, 
+						    DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL, 
+						    style, 
+						    &dwriteFont)))
+					{
+						break;
+					}
+					delete[] fontName;
+				}
+				SafeRelease(&names);
+			}
+			
+			if (!dwriteFont)
+			{			
+				IDWriteFontFamily* drwiteFF;
+				dwriteFontCollection->GetFontFamily(0, &drwiteFF);
+
+				if (FAILED(drwiteFF->GetFont(0, &dwriteFont)))
+				{
+					_cairo_error_throw(CAIRO_STATUS_INVALID_STRING);
+				}
+				SafeRelease(&drwiteFF);
+			}
+			SafeRelease(&dwriteFontCollection);
+		}
+		else
+		{
+			_cairo_error_throw(CAIRO_STATUS_INVALID_STRING);
 		}
 	}
 

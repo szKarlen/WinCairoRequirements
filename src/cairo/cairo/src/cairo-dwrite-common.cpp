@@ -39,7 +39,7 @@ cairo_dwrite_register_font_face(_In_reads_bytes_(cjSize) PVOID data, _In_ unsign
 	cairo_begin_custom_fonts_update();
 
 	char* nData = new char[cjSize];
-	memcpy(nData, data, cjSize);
+	memcpy(nData, data, cjSize*sizeof(char));
 
 	cairo_font_data holder = { nData, cjSize };
 	_fonts->push_back(holder);

@@ -22,6 +22,9 @@ CairoDWriteFontContext::~CairoDWriteFontContext()
 {
 	DWriteFactory::Instance()->UnregisterFontCollectionLoader(CairoDWriteFontCollectionLoader::GetLoader());
 	DWriteFactory::Instance()->UnregisterFontFileLoader(CairoDWriteFontFileLoader::GetLoader());
+
+	/*auto instance = CairoDWriteFontCollectionLoader::GetLoader();
+	SafeRelease(&instance);*/
 }
 
 HRESULT CairoDWriteFontContext::Initialize()
@@ -43,11 +46,12 @@ HRESULT CairoDWriteFontContext::InitializeInternal()
 		return E_FAIL;
 	}
 
+	SafeAcquire(CairoDWriteFontFileLoader::GetLoader());
 	if (FAILED(hr = DWriteFactory::Instance()->RegisterFontFileLoader(CairoDWriteFontFileLoader::GetLoader())))
 		return hr;
 
 	hr = DWriteFactory::Instance()->RegisterFontCollectionLoader(CairoDWriteFontCollectionLoader::GetLoader());
-
+	SafeAcquire(CairoDWriteFontCollectionLoader::GetLoader());
 	return hr;
 }
 
