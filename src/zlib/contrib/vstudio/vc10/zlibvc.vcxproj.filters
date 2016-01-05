@@ -42,6 +42,9 @@
     <ClCompile Include="..\..\..\infback.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\masmx64\inffas8664.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\inffast.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,9 +73,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\zutil.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\masmx64\inffas8664.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -114,19 +114,5 @@
     <ClInclude Include="..\..\..\zutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="..\..\masmx86\inffas32.asm">
-      <Filter>Source Files</Filter>
-    </MASM>
-    <MASM Include="..\..\masmx86\match686.asm">
-      <Filter>Source Files</Filter>
-    </MASM>
-    <MASM Include="..\..\masmx64\gvmat64.asm">
-      <Filter>Source Files</Filter>
-    </MASM>
-    <MASM Include="..\..\masmx64\inffasx64.asm">
-      <Filter>Source Files</Filter>
-    </MASM>
   </ItemGroup>
 </Project>
