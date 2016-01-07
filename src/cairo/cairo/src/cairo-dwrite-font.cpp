@@ -490,7 +490,6 @@ _cairo_dwrite_font_face_scaled_font_create(void			*abstract_face,
 
 	dwriteFont->measuring_mode = DWRITE_MEASURING_MODE_NATURAL;
 
-	/*
 	// The following code detects the system quality at scaled_font creation time,
 	// this means that if cleartype settings are changed but the scaled_fonts
 	// are re-used, they might not adhere to the new system setting until re-
@@ -526,7 +525,7 @@ _cairo_dwrite_font_face_scaled_font_create(void			*abstract_face,
 	dwriteFont->rendering_mode =
 		default_quality == CAIRO_ANTIALIAS_SUBPIXEL ?
 			TEXT_RENDERING_NORMAL : TEXT_RENDERING_NO_CLEARTYPE;
-	*/
+	
 	dwriteFont->rendering_mode = TEXT_RENDERING_NORMAL;
 
 	return _cairo_scaled_font_set_metrics(*font, &extents);
@@ -668,7 +667,7 @@ _cairo_dwrite_scaled_show_glyphs(void			*scaled_font,
 
 		DWRITE_RENDERING_MODE rednerMode = dwritesf->base.font_matrix.yy < 16.0
 			? DWRITE_RENDERING_MODE_CLEARTYPE_GDI_CLASSIC
-			: DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC;
+			: DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC;
 
 		DWRITE_MEASURING_MODE measureMode = dwritesf->base.font_matrix.yy < 16.0
 			? DWRITE_MEASURING_MODE_GDI_CLASSIC
@@ -1412,7 +1411,7 @@ _dwrite_draw_glyphs_to_gdi_surface_gdi(cairo_win32_surface_t *surface,
 		area.left, area.top,
 		SRCCOPY | NOMIRRORBITMAP);
 	DWRITE_MEASURING_MODE measureMode;
-	/*switch (scaled_font->rendering_mode) {
+	switch (scaled_font->rendering_mode) {
 	case TEXT_RENDERING_GDI_CLASSIC:
 	case TEXT_RENDERING_NO_CLEARTYPE:
 		measureMode = DWRITE_MEASURING_MODE_GDI_CLASSIC;
@@ -1420,8 +1419,8 @@ _dwrite_draw_glyphs_to_gdi_surface_gdi(cairo_win32_surface_t *surface,
 	default:
 		measureMode = DWRITE_MEASURING_MODE_NATURAL;
 		break;
-	}*/
-	measureMode = DWRITE_MEASURING_MODE_NATURAL;
+	}
+	//measureMode = DWRITE_MEASURING_MODE_NATURAL;
 	HRESULT hr = rt->DrawGlyphRun(0, 0, measureMode, run, params, color);
 	BitBlt(surface->dc,
 		area.left, area.top,
