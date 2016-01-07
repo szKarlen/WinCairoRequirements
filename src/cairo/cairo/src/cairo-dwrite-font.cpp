@@ -662,14 +662,20 @@ _cairo_dwrite_scaled_show_glyphs(void			*scaled_font,
 	    run.fontEmSize = 1.0f;
 	}
 
+	DWRITE_RENDERING_MODE rednerMode = dwritesf->base.font_matrix.yy < 16.0
+		? DWRITE_RENDERING_MODE_CLEARTYPE_GDI_CLASSIC
+		: DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC;
+
+	DWRITE_MEASURING_MODE measureMode = dwritesf->base.font_matrix.yy < 16.0
+		? DWRITE_MEASURING_MODE_GDI_CLASSIC
+		: DWRITE_MEASURING_MODE_NATURAL;
+
 	if (!transform) {
 	    DWriteFactory::Instance()->CreateGlyphRunAnalysis(&run,
 							      1.0f,
 							      NULL,
-							      dwritesf->base.font_matrix.yy < 16.0 
-										? DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL
-										: DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC,
-							      DWRITE_MEASURING_MODE_NATURAL,
+							      rednerMode,
+							      measureMode,
 							      0,
 							      0,
 							      &analysis);
@@ -678,10 +684,8 @@ _cairo_dwrite_scaled_show_glyphs(void			*scaled_font,
 	    DWriteFactory::Instance()->CreateGlyphRunAnalysis(&run,
 							      1.0f,
 							      &dwmatrix,
-								  dwritesf->base.font_matrix.yy < 16.0
-										? DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL
-										: DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC,
-							      DWRITE_MEASURING_MODE_NATURAL,
+								  rednerMode,
+							      measureMode,
 							      0,
 							      0,
 							      &analysis);
