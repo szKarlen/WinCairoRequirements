@@ -28,7 +28,7 @@
 
 #if defined(WINAPI_FAMILY_PARTITION) && (!(defined(IOWIN32_USING_WINRT_API)))
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
-#define IOWIN32_USING_WINRT_API 1
+//#define IOWIN32_USING_WINRT_API 1
 #endif
 #endif
 
@@ -109,7 +109,7 @@ voidpf ZCALLBACK win32_open64_file_func (voidpf opaque,const void* filename,int 
     {
         WCHAR filenameW[FILENAME_MAX + 0x200 + 1];
         MultiByteToWideChar(CP_ACP,0,(const char*)filename,-1,filenameW,FILENAME_MAX + 0x200);
-        hFile = CreateFile2(filenameW, dwDesiredAccess, dwShareMode, dwCreationDisposition, NULL);
+        hFile = CreateFile(filenameW, dwDesiredAccess, dwShareMode, dwCreationDisposition, NULL, dwFlagsAndAttributes, NULL);
     }
 #endif
 #else
@@ -182,7 +182,7 @@ voidpf ZCALLBACK win32_open_file_func (voidpf opaque,const char* filename,int mo
     {
         WCHAR filenameW[FILENAME_MAX + 0x200 + 1];
         MultiByteToWideChar(CP_ACP,0,(const char*)filename,-1,filenameW,FILENAME_MAX + 0x200);
-        hFile = CreateFile2(filenameW, dwDesiredAccess, dwShareMode, dwCreationDisposition, NULL);
+        hFile = CreateFile(filenameW, dwDesiredAccess, dwShareMode, dwCreationDisposition, NULL, dwFlagsAndAttributes, NULL);
     }
 #endif
 #else
