@@ -206,9 +206,6 @@ xcopy /Y /R "$(ProjectDir)..\..\include\libxml\*.h" "$(SolutionDir)include\libxm
     <ProjectReference Include="..\..\..\libiconv\libiconv.vcxproj">
       <Project>{754ab981-be9d-418a-adb5-274e6c62e757}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\zlib\contrib\vstudio\vc10\zlibvc.vcxproj">
-      <Project>{8fd826f8-3739-44e6-8cc8-997122e53b8d}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

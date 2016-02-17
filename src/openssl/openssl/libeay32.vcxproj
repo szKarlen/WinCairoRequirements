@@ -912,11 +912,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </MASM>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\zlib\contrib\vstudio\vc10\zlibvc.vcxproj">
-      <Project>{8fd826f8-3739-44e6-8cc8-997122e53b8d}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{94E8B419-53A1-4C01-857E-9744F79A4822}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
