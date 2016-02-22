@@ -491,8 +491,12 @@ CF_EXPORT CFMessagePortRef _CFMessagePortCreateLocalEx(CFAllocatorRef allocator,
 #else
 // Avoid including the pthread header
 #ifndef HAVE_STRUCT_TIMESPEC
+#if _MSC_VER >= 1900
+#include <time.h>
+#else
 #define HAVE_STRUCT_TIMESPEC 1
 struct timespec { long tv_sec; long tv_nsec; };
+#endif
 #endif
 #endif
 

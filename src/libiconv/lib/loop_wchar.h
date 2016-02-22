@@ -40,7 +40,7 @@
 # endif
 #else
 # ifndef mbstate_t
-   typedef int mbstate_t;
+   //typedef int mbstate_t;
 # endif
 #endif
 
